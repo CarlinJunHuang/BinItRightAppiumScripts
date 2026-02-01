@@ -8,5 +8,7 @@ public class AppLaunchTest {
     public void appShouldLaunch() {
         // If app launches without crash → test passes
         System.out.println("App launched successfully");
+
+		assert driver != null;
     }
 }
