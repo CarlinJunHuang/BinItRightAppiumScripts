@@ -1,6 +1,8 @@
 package tests;
 
+import base.ProjectSpecificationMethods;
 import org.testng.annotations.Test;
+import org.testng.Assert;
 
 public class AppLaunchTest extends ProjectSpecificationMethods {
 
