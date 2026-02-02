@@ -22,15 +22,19 @@ public class ProjectSpecificationMethods {
         }
 
         UiAutomator2Options options = new UiAutomator2Options()
+				.setPlatformName("Android")
                 .setDeviceName("Android Emulator")
                 .setAutomationName("UiAutomator2")
                 .setApp(apkPath)
+				.setNoReset(true)
                 .autoGrantPermissions();
 
         driver = new AndroidDriver(
         		URI.create("http://127.0.0.1:4723").toURL(),
                 options
         );
+		driver.manage().timeouts()
+                .implicitlyWait(Duration.ofSeconds(10));
     }
 
     @AfterMethod
