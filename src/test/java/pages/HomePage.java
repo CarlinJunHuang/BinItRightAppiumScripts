@@ -1,111 +1,74 @@
 package pages;
 
-
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.interactions.Sequence;
 
 import java.time.Duration;
-import java.util.Collections;
-
 
 public class HomePage {
 
     private AndroidDriver driver;
     private WebDriverWait wait;
 
-    private By cardFindBins = By.id("cardFindBins");
-    private By pointsCounter = By.id("tvPointsCount");
+    private By pointsCounter = By.id("iss.nus.edu.sg.webviews.bin:id/tvPointsCount");
+    private By findBinsCard  = By.id("iss.nus.edu.sg.webviews.bin:id/cardFindBins");
+
 
     public HomePage(AndroidDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(25));
     }
 
+
     public void waitForHomePage() {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(pointsCounter));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(pointsCounter));
     }
 
     public boolean isHomePageDisplayed() {
-        return driver.findElement(pointsCounter).isDisplayed();
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(pointsCounter)
+        ).isDisplayed();
     }
 
-    public void openFindRecyclingBins() {
 
+    public void openFindRecyclingBins() {
         waitForHomePage();
 
-        By findBinsCard = By.id("cardFindBins");
-
-        int maxSwipes = 2;
-        boolean found = false;
+        int maxSwipes = 6;
 
         for (int i = 0; i < maxSwipes; i++) {
-
             if (driver.findElements(findBinsCard).size() > 0) {
-                found = true;
-                break;
+                WebElement card = driver.findElement(findBinsCard);
+                wait.until(ExpectedConditions.elementToBeClickable(card)).click();
+                System.out.println("Clicked Find Recycling Bins card");
+                return;
             }
-
             swipeUp();
         }
 
-        if (!found) {
-            throw new RuntimeException("Find Recycling Bins card not found after scrolling");
-        }
-
-        WebElement card = wait.until(
-                ExpectedConditions.elementToBeClickable(findBinsCard)
-        );
-        card.click();
-
+        throw new RuntimeException("Find Recycling Bins card not found after scrolling");
     }
 
 
     private void swipeUp() {
+        Dimension size = driver.manage().window().getSize();
 
-        int width = driver.manage().window().getSize().width;
-        int height = driver.manage().window().getSize().height;
+        int startX = size.width / 2;
+        int startY = (int) (size.height * 0.75);
+        int endY   = (int) (size.height * 0.25);
 
-        int startX = width / 2;
-        int startY = (int) (height * 0.75);
-        int endY   = (int) (height * 0.25);
-
-        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-
-        Sequence swipe = new Sequence(finger, 1);
-
-        swipe.addAction(
-                finger.createPointerMove(
-                        Duration.ZERO,
-                        PointerInput.Origin.viewport(),
-                        startX,
-                        startY
-                )
-        );
-
-        swipe.addAction(
-                finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())
-        );
-
-        swipe.addAction(
-                finger.createPointerMove(
-                        Duration.ofMillis(600),
-                        PointerInput.Origin.viewport(),
-                        startX,
-                        endY
-                )
-        );
-
-        swipe.addAction(
-                finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg())
-        );
-
-        driver.perform(Collections.singletonList(swipe));
+        new TouchAction<>(driver)
+                .press(PointOption.point(startX, startY))
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(600)))
+                .moveTo(PointOption.point(startX, endY))
+                .release()
+                .perform();
     }
-
-
 }
