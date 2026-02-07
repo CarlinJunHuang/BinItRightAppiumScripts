@@ -2,7 +2,10 @@ package pages;
 
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class LoginPage {
 
@@ -12,20 +15,23 @@ public class LoginPage {
         this.driver = driver;
     }
 
-    private By usernameInput =
-            By.xpath("//android.widget.EditText[@hint='Enter your username']");
-    private By passwordInput =
-            By.xpath("//android.widget.EditText[@hint='Enter your password']");
-    private By signInButton = By.id("btnSignIn");
+    By username = By.id("appUsername");
+    By password = By.id("appPassword");
+    By signIn  = By.id("btnSignIn");
 
-    public void login(String username, String password) {
-        driver.findElement(usernameInput).sendKeys(username);
-        driver.findElement(passwordInput).sendKeys(password);
-        driver.findElement(signInButton).click();
+    public void login(String user, String pass) {
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(25));
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(username));
+        driver.findElement(username).sendKeys(user);
+
+        driver.findElement(password).sendKeys(pass);
+        driver.findElement(signIn).click();
     }
 
     public boolean isLoginPageDisplayed() {
-        return driver.findElement(signInButton).isDisplayed();
+        return driver.findElement(signIn).isDisplayed();
     }
 }
 
