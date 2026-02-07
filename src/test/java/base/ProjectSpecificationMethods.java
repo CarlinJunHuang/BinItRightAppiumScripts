@@ -36,12 +36,15 @@ public class ProjectSpecificationMethods {
 //                .setDeviceName("8ARY0Q2RN")
 //                .setApp(apkPath)
 //                .setAutoGrantPermissions(true)
-//                .setNoReset(false);
+//                .setNoReset(false)
 
-
-        driver = new AndroidDriver(
-        		URI.create("http://127.0.0.1:4723").toURL(),
-                options
+			.amend("uiautomator2ServerInstallTimeout", 120000)
+        	.amend("adbExecTimeout", 120000)
+        	.amend("uiautomator2ServerLaunchTimeout", 120000);
+		
+       	 	driver = new AndroidDriver(
+        	URI.create("http://127.0.0.1:4723").toURL(),
+            options
         );
 		driver.manage().timeouts()
                 .implicitlyWait(Duration.ofSeconds(10));
