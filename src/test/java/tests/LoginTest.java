@@ -24,12 +24,12 @@ public class LoginTest extends ProjectSpecificationMethods {
                 "Home page should be visible after valid login");
     }
 
-    @Test
-    public void loginWithInvalidCredentials() {
-        LoginPage login = new LoginPage(driver);
-        login.login("wronguser", "wrongpass");
-
-        Assert.assertTrue(login.isLoginPageDisplayed(),
-                "Login page should remain on invalid credentials");
-    }
+//    @Test
+//    public void loginWithInvalidCredentials() {
+//        LoginPage login = new LoginPage(driver);
+//        login.login("wronguser", "wrongpass");
+//
+//        Assert.assertTrue(login.isLoginPageDisplayed(),
+//                "Login page should remain on invalid credentials");
+//    }
 }

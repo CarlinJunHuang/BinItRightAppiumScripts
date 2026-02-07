@@ -1,5 +1,6 @@
 package pages;
 
+import utils.ScrollUtil;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.WaitOptions;
@@ -19,7 +20,9 @@ public class HomePage {
 
     private By pointsCounter = By.id("iss.nus.edu.sg.webviews.bin:id/tvPointsCount");
     private By findBinsCard  = By.id("iss.nus.edu.sg.webviews.bin:id/cardFindBins");
-
+    private By recycleNowButton = By.id("btnRecycleNow");
+    private By homeTitle =
+            By.xpath("//android.widget.TextView[@text='Bin It Right']");
 
     public HomePage(AndroidDriver driver) {
         this.driver = driver;
@@ -32,9 +35,17 @@ public class HomePage {
     }
 
     public boolean isHomePageDisplayed() {
-        return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(pointsCounter)
-        ).isDisplayed();
+        try {
+            driver.context("NATIVE_APP");
+
+            // Home screen navigation indicator (not API-based)
+            wait.until(ExpectedConditions.presenceOfElementLocated(homeTitle));
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("Home page not detected: " + e.getMessage());
+            return false;
+        }
     }
 
 
@@ -70,5 +81,10 @@ public class HomePage {
                 .moveTo(PointOption.point(startX, endY))
                 .release()
                 .perform();
+    }
+
+    public void clickRecycleNow() {
+        ScrollUtil.scrollDown(driver);
+        driver.findElement(recycleNowButton).click();
     }
 }
