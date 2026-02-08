@@ -3,8 +3,14 @@
     <test name="CI Tests">
         <classes>
             <class name="tests.AppLaunchTest"/>
-
-
+            <class name="tests.ValidLoginTest"/>
+            <class name="tests.FindRecyclingBinTest"/>
+            <class name="tests.ScanAndSelectBinTest"/>
+            <class name="tests.NewsNavigationTest"/>
+            <class name="tests.EventsNavigationTest"/>
+            <class name="tests.ProfileNavigationTest"/>
+            <class name="tests.LogoutTest"/>
+            <class name="tests.AchievementTest"/>
         </classes>
     </test>
 </suite>
