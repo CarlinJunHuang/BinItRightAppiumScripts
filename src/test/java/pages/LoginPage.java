@@ -11,26 +11,25 @@ import java.time.Duration;
 
 public class LoginPage {
 
-    private AndroidDriver driver;
-    private WebDriverWait wait;
+    private final AndroidDriver driver;
+    private final WebDriverWait wait;
 
     public LoginPage(AndroidDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
 
+    private final By username = AppiumBy.androidUIAutomator(
+            "new UiSelector().resourceId(\"iss.nus.edu.sg.webviews.binitrightmobileapp:id/appUsername\")"
+    );
 
-    private By username =
-            AppiumBy.androidUIAutomator(
-                    "new UiSelector().className(\"android.widget.EditText\").instance(0)"
-            );
+    private final By password = AppiumBy.androidUIAutomator(
+            "new UiSelector().resourceId(\"iss.nus.edu.sg.webviews.binitrightmobileapp:id/appPassword\")"
+    );
 
-    private By password =
-            AppiumBy.androidUIAutomator(
-                    "new UiSelector().className(\"android.widget.EditText\").instance(1)"
-            );
-
-    By signIn  = By.id("btnSignIn");
+    private final By signIn = AppiumBy.androidUIAutomator(
+            "new UiSelector().resourceId(\"iss.nus.edu.sg.webviews.binitrightmobileapp:id/btnSignIn\")"
+    );
 
     public void login(String user, String pass) {
 
@@ -50,8 +49,8 @@ public class LoginPage {
         try {
             driver.hideKeyboard();
             Thread.sleep(1000);
-        } catch (Exception ignored) {}
-
+        } catch (Exception ignored) {
+        }
 
         driver.findElement(signIn).click();
     }
@@ -59,9 +58,7 @@ public class LoginPage {
     public boolean isLoginPageDisplayed() {
 
         return new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//android.widget.TextView[contains(@text,'Welcome')]")
-                ))
+                .until(ExpectedConditions.visibilityOfElementLocated(username))
                 .isDisplayed();
     }
 }

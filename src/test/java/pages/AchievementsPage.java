@@ -9,11 +9,12 @@ import java.time.Duration;
 
 public class AchievementsPage {
 
-    private AndroidDriver driver;
-    private WebDriverWait wait;
+    private static final String APP_ID = "iss.nus.edu.sg.webviews.binitrightmobileapp";
 
-    private By achievementsList =
-            By.id("iss.nus.edu.sg.webviews.bin:id/rvAchievements");
+    private final AndroidDriver driver;
+    private final WebDriverWait wait;
+
+    private final By achievementsList = By.id(APP_ID + ":id/rvAchievements");
 
     public AchievementsPage(AndroidDriver driver) {
         this.driver = driver;
@@ -21,10 +22,7 @@ public class AchievementsPage {
     }
 
     public boolean isAchievementsScreenDisplayed() {
-
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//android.widget.TextView[@text='Achievements']")
-        )).isDisplayed();
-
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(achievementsList)).isDisplayed();
     }
 }
+

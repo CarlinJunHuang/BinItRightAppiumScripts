@@ -9,20 +9,15 @@ import utils.ScrollUtil;
 
 import java.time.Duration;
 
-
 public class ProfilePage {
 
-    private AndroidDriver driver;
-    private WebDriverWait wait;
+    private static final String APP_ID = "iss.nus.edu.sg.webviews.binitrightmobileapp";
 
-    private By logoutButton =
-            By.id("iss.nus.edu.sg.webviews.bin:id/logoutBtn");
+    private final AndroidDriver driver;
+    private final WebDriverWait wait;
 
-    private By profileName =
-            By.id("iss.nus.edu.sg.webviews.bin:id/profileName");
-
-    private By profileHeader = AppiumBy.androidUIAutomator(
-                    "new UiSelector().text(\"My Profile\")");
+    private final By logoutButton = By.id(APP_ID + ":id/logoutBtn");
+    private final By profileName = By.id(APP_ID + ":id/profileName");
 
     public ProfilePage(AndroidDriver driver) {
         this.driver = driver;
@@ -31,40 +26,37 @@ public class ProfilePage {
 
     public boolean isProfileScreenDisplayed() {
         return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(profileHeader)
+                ExpectedConditions.visibilityOfElementLocated(profileName)
         ).isDisplayed();
     }
-
 
     public void scrollToLogout() {
         driver.findElement(
                 AppiumBy.androidUIAutomator(
-                        "new UiScrollable(new UiSelector().scrollable(true))" +
-                                ".scrollIntoView(new UiSelector().resourceId(" +
-                                "\"iss.nus.edu.sg.webviews.bin:id/logoutBtn\"))"
+                        "new UiScrollable(new UiSelector().scrollable(true))"
+                                + ".scrollIntoView(new UiSelector().resourceId(\""
+                                + APP_ID
+                                + ":id/logoutBtn\"))"
                 )
         );
     }
 
     public LoginPage logout() {
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(profileHeader));
-
-        By logoutLocator = By.id("iss.nus.edu.sg.webviews.bin:id/logoutBtn");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(profileName));
 
         for (int i = 0; i < 3; i++) {
             ScrollUtil.scrollDown(driver);
-
             try {
                 Thread.sleep(400);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
 
-            if (!driver.findElements(logoutLocator).isEmpty()) {
+            if (!driver.findElements(logoutButton).isEmpty()) {
                 break;
             }
         }
 
-        org.openqa.selenium.WebElement logoutBtn = driver.findElement(logoutLocator);
+        org.openqa.selenium.WebElement logoutBtn = driver.findElement(logoutButton);
         driver.executeScript("mobile: clickGesture", java.util.Map.of(
                 "elementId",
                 ((org.openqa.selenium.remote.RemoteWebElement) logoutBtn).getId()
@@ -72,6 +64,5 @@ public class ProfilePage {
 
         return new LoginPage(driver);
     }
-
-
 }
+
