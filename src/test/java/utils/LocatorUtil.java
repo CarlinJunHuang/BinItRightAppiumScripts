@@ -5,13 +5,14 @@ import org.openqa.selenium.By;
 
 public final class LocatorUtil {
 
+    private static final String DEFAULT_APP_PACKAGE = "iss.nus.edu.sg.webviews.binitrightmobileapp";
+
     private LocatorUtil() {
     }
 
-    // Match resource ids regardless of flavor/package suffix.
+    // Prefer exact resource-id matching for stability and speed.
     public static By idAnyPackage(String id) {
-        return AppiumBy.androidUIAutomator(
-                "new UiSelector().resourceIdMatches(\".*:id/" + id + "\")"
-        );
+        String appPackage = System.getProperty("app.package", DEFAULT_APP_PACKAGE);
+        return AppiumBy.id(appPackage + ":id/" + id);
     }
 }

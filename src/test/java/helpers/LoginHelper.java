@@ -12,6 +12,11 @@ public class LoginHelper {
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = new HomePage(driver);
 
+        Assert.assertTrue(
+                loginPage.waitUntilLoginOrHome(20),
+                "App did not reach login/home state before login step"
+        );
+
         if (loginPage.isLoginPageDisplayed()) {
             loginPage.login(
                     ConfigReader.get("valid.username"),

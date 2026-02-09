@@ -3,7 +3,6 @@ package tests;
 import base.ProjectSpecificationMethods;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.HomePage;
 import pages.LoginPage;
 
 public class AppLaunchTest extends ProjectSpecificationMethods {
@@ -13,9 +12,8 @@ public class AppLaunchTest extends ProjectSpecificationMethods {
         Assert.assertNotNull(driver, "Driver should be initialized");
 
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = new HomePage(driver);
 
-        boolean launchedToExpectedScreen = loginPage.isLoginPageDisplayed() || homePage.isHomePageDisplayed();
+        boolean launchedToExpectedScreen = loginPage.waitUntilLoginOrHome(25);
         Assert.assertTrue(launchedToExpectedScreen, "App did not launch to login or home screen");
     }
 }

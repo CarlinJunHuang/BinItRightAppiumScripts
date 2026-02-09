@@ -25,12 +25,18 @@ public class ConfigReader {
     }
 
     public static String get(String key) {
+        String sysValue = System.getProperty(key);
+        if (sysValue != null && !sysValue.isBlank()) {
+            return sysValue;
+        }
+
+        String envKey = key.toUpperCase().replace('.', '_');
+        String envValue = System.getenv(envKey);
+        if (envValue != null && !envValue.isBlank()) {
+            return envValue;
+        }
+
         return properties.getProperty(key);
     }
-
-//    public static String get(String key) {
-//        String sysValue = System.getProperty(key);
-//        return (sysValue != null) ? sysValue : properties.getProperty(key);
-//    }
 
 }

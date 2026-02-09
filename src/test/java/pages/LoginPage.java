@@ -21,7 +21,7 @@ public class LoginPage {
 
     public LoginPage(AndroidDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(12));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     private boolean isVisible(By locator, int seconds) {
@@ -29,6 +29,14 @@ public class LoginPage {
             new WebDriverWait(driver, Duration.ofSeconds(seconds))
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private boolean isPresent(By locator) {
+        try {
+            return !driver.findElements(locator).isEmpty();
         } catch (Exception ignored) {
             return false;
         }
@@ -52,13 +60,39 @@ public class LoginPage {
         }
     }
 
+    public boolean waitUntilLoginOrHome(int seconds) {
+        long deadline = System.currentTimeMillis() + seconds * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            dismissPermissionDialogs();
+            if (isPresent(username) || isPresent(homeMarker)) {
+                return true;
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean isHomeMarkerDisplayed() {
+        return isPresent(homeMarker);
+    }
+
     public void login(String user, String pass) {
         driver.context("NATIVE_APP");
-        dismissPermissionDialogs();
 
-        if (!isVisible(username, 4)) {
-            if (isVisible(homeMarker, 4)) {
-                // Session already authenticated; nothing to do.
+        if (!waitUntilLoginOrHome(20)) {
+            throw new RuntimeException(
+                    "Neither login nor home marker found. package=" + driver.getCurrentPackage()
+                            + ", activity=" + driver.currentActivity()
+            );
+        }
+
+        if (!isPresent(username)) {
+            if (isPresent(homeMarker)) {
                 return;
             }
             throw new RuntimeException(
@@ -86,6 +120,9 @@ public class LoginPage {
     }
 
     public boolean isLoginPageDisplayed() {
-        return isVisible(username, 4);
+        if (!waitUntilLoginOrHome(15)) {
+            return false;
+        }
+        return isVisible(username, 5);
     }
 }
