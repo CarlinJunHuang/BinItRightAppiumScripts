@@ -3,6 +3,7 @@ package pages;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -47,7 +48,7 @@ public class ProfilePage {
             }
         }
 
-        var logoutBtn = wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
+        WebElement logoutBtn = wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
         driver.executeScript("mobile: clickGesture", java.util.Map.of(
                 "elementId",
                 ((RemoteWebElement) logoutBtn).getId()
