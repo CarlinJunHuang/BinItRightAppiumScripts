@@ -1,23 +1,23 @@
 package helpers;
 
 import io.appium.java_client.android.AndroidDriver;
-import pages.LoginPage;
-import pages.HomePage;
-import utils.ConfigReader;
 import org.testng.Assert;
+import pages.HomePage;
+import pages.LoginPage;
+import utils.ConfigReader;
 
 public class LoginHelper {
 
     public static HomePage loginWithValidUser(AndroidDriver driver) {
-
         LoginPage loginPage = new LoginPage(driver);
-
-        loginPage.login(
-                ConfigReader.get("valid.username"),
-                ConfigReader.get("valid.password")
-        );
-
         HomePage homePage = new HomePage(driver);
+
+        if (loginPage.isLoginPageDisplayed()) {
+            loginPage.login(
+                    ConfigReader.get("valid.username"),
+                    ConfigReader.get("valid.password")
+            );
+        }
 
         Assert.assertTrue(
                 homePage.isHomePageDisplayed(),

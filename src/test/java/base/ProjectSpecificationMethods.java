@@ -1,75 +1,80 @@
 package base;
 
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import org.openqa.selenium.By;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.net.URI;
-import java.net.URL;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.options.UiAutomator2Options;
 
 public class ProjectSpecificationMethods {
-	
-	protected AndroidDriver driver;
-	
-	@BeforeMethod
+
+    private static final String APP_PACKAGE = "iss.nus.edu.sg.webviews.binitrightmobileapp";
+
+    protected AndroidDriver driver;
+
+    @BeforeMethod
     public void setUp() throws Exception {
-
         String apkPath = System.getProperty("apk.path");
-
-        if (apkPath == null) {
+        if (apkPath == null || apkPath.isBlank()) {
             throw new RuntimeException("APK path not provided");
         }
 
-       UiAutomator2Options options = new UiAutomator2Options()
-				.setPlatformName("Android")
-               .setDeviceName("Android Emulator")
-               .setAutomationName("UiAutomator2")
-               .setApp(apkPath)
-				.setNoReset(false)
-               .setFullReset(true)
-               .autoGrantPermissions()
+        UiAutomator2Options options = new UiAutomator2Options()
+                .setPlatformName("Android")
+                .setDeviceName("Android Emulator")
+                .setAutomationName("UiAutomator2")
+                .setApp(apkPath)
+                .setNoReset(false)
+                .setFullReset(false)
+                .autoGrantPermissions()
+                .amend("uiautomator2ServerInstallTimeout", 120000)
+                .amend("adbExecTimeout", 120000)
+                .amend("uiautomator2ServerLaunchTimeout", 120000)
+                .amend("newCommandTimeout", 180);
 
-        // UiAutomator2Options options = new UiAutomator2Options()
-        //         .setPlatformName("Android")
-        //         .setAutomationName("UiAutomator2")
-        //         .setDeviceName("8ARY0Q2RN")
-        //         .setUdid("8ARY0Q2RN")
-        //         .setApp(apkPath)
-        //         .setAutoGrantPermissions(true)
-        //         .setNoReset(false)
-
-			.amend("uiautomator2ServerInstallTimeout", 120000)
-        	.amend("adbExecTimeout", 120000)
-        	.amend("uiautomator2ServerLaunchTimeout", 120000);
-
-       	 	driver = new AndroidDriver(
-        	URI.create("http://127.0.0.1:4723").toURL(),
-            options
+        driver = new AndroidDriver(
+                URI.create("http://127.0.0.1:4723").toURL(),
+                options
         );
 
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
+
+        try {
+            driver.activateApp(APP_PACKAGE);
+        } catch (Exception ignored) {
+        }
+
+        System.out.println("Current package: " + driver.getCurrentPackage());
         System.out.println("Current activity: " + driver.currentActivity());
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
+
         handlePermissions();
     }
 
-    private void handlePermissions() {
+    private void clickIfPresent(By locator) {
         try {
-            driver.findElement(
-                    By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")
-            ).click();
-        } catch (Exception ignored) {}
+            if (!driver.findElements(locator).isEmpty()) {
+                driver.findElement(locator).click();
+            }
+        } catch (Exception ignored) {
+        }
+    }
 
-        try {
-            driver.findElement(
-                    By.id("com.android.permissioncontroller:id/permission_allow_button")
-            ).click();
-        } catch (Exception ignored) {}
+    private void handlePermissions() {
+        // Try several known permission dialog IDs used across Android images.
+        for (int i = 0; i < 3; i++) {
+            clickIfPresent(By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button"));
+            clickIfPresent(By.id("com.android.permissioncontroller:id/permission_allow_one_time_button"));
+            clickIfPresent(By.id("com.android.permissioncontroller:id/permission_allow_button"));
+            clickIfPresent(By.id("com.android.packageinstaller:id/permission_allow_button"));
+
+            try {
+                Thread.sleep(350);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     @AfterMethod
@@ -79,5 +84,3 @@ public class ProjectSpecificationMethods {
         }
     }
 }
-
-

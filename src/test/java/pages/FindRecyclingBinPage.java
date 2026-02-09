@@ -5,31 +5,29 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.LocatorUtil;
 
 import java.time.Duration;
 import java.util.List;
 
 public class FindRecyclingBinPage {
 
-    private AndroidDriver driver;
-    private WebDriverWait wait;
+    private final AndroidDriver driver;
+    private final WebDriverWait wait;
 
-    private By mapContainer = By.id("mapContainer");
-    private By recyclerView = By.id("binsRecyclerView");
+    private final By mapContainer = LocatorUtil.idAnyPackage("mapContainer");
+    private final By recyclerView = LocatorUtil.idAnyPackage("binsRecyclerView");
 
-    private By chipAll = By.id("chipAll");
-    private By chipBlueBin = By.id("chipBlueBin");
-    private By chipEwaste = By.id("chipEwaste");
-    private By binTypeText = By.id("txtType");
+    private final By chipBlueBin = LocatorUtil.idAnyPackage("chipBlueBin");
+    private final By chipEwaste = LocatorUtil.idAnyPackage("chipEwaste");
+    private final By binTypeText = LocatorUtil.idAnyPackage("txtType");
 
-    private By firstDirectionButton = By.id("btnDirections");
-
+    private final By firstDirectionButton = LocatorUtil.idAnyPackage("btnDirections");
 
     public FindRecyclingBinPage(AndroidDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(16));
     }
-
 
     public void waitForPageToLoad() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(mapContainer));
@@ -37,16 +35,11 @@ public class FindRecyclingBinPage {
     }
 
     public boolean isMapVisible() {
-        return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(mapContainer)
-        ).isDisplayed();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(mapContainer)).isDisplayed();
     }
 
     public boolean isListVisible() {
-        return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(recyclerView)
-        ).isDisplayed();
-
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(recyclerView)).isDisplayed();
     }
 
     public void filterBlueBins() {
@@ -63,26 +56,10 @@ public class FindRecyclingBinPage {
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(binTypeText, 0));
     }
 
-    public boolean areMultipleBinTypesDisplayed() {
-
-        List<WebElement> types = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(binTypeText));
-        if (types.size() < 2) return false;
-        String firstType = types.get(0).getText().trim();
-
-        for (WebElement type : types) {
-            if (!type.getText().trim().equalsIgnoreCase(firstType)) {
-                return true; // mixed types = all bins
-            }
-        }
-        return false;
-    }
-
-
     public boolean areAllBinsOfType(String expectedType) {
-
         List<WebElement> types = driver.findElements(binTypeText);
         if (types.isEmpty()) {
-            return false; // no data = test should fail
+            return false;
         }
 
         for (WebElement type : types) {
@@ -94,15 +71,14 @@ public class FindRecyclingBinPage {
     }
 
     public void clickFirstDirection() {
-        List<WebElement> buttons =
-                wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(firstDirectionButton));
-
+        List<WebElement> buttons = wait.until(
+                ExpectedConditions.presenceOfAllElementsLocatedBy(firstDirectionButton)
+        );
         buttons.get(0).click();
     }
 
     public boolean isGoogleMapsOpened() {
-
-        WebDriverWait pkgWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebDriverWait pkgWait = new WebDriverWait(driver, Duration.ofSeconds(12));
 
         boolean opened = pkgWait.until(d -> {
             String pkg = driver.getCurrentPackage();
@@ -110,10 +86,7 @@ public class FindRecyclingBinPage {
             return pkg.contains("google.android.apps.maps");
         });
 
-
         driver.navigate().back();
-
         return opened;
     }
-
 }

@@ -1,6 +1,5 @@
 package pages;
 
-import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -10,6 +9,7 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.LocatorUtil;
 import utils.ScrollUtil;
 
 import java.time.Duration;
@@ -18,22 +18,20 @@ import java.util.Map;
 
 public class HomePage {
 
-    private static final String APP_ID = "iss.nus.edu.sg.webviews.binitrightmobileapp";
-
     private final AndroidDriver driver;
     private final WebDriverWait wait;
 
-    private final By pointsCounter = By.id(APP_ID + ":id/tvPointsCount");
-    private final By findBinsCard = By.id(APP_ID + ":id/cardFindBins");
-    private final By newsTab = By.id(APP_ID + ":id/nav_news");
-    private final By eventsTab = By.id(APP_ID + ":id/nav_events");
-    private final By profileTab = By.id(APP_ID + ":id/nav_profile");
-    private final By recycleNowButton = By.id(APP_ID + ":id/btnRecycleNow");
-    private final By achievementsCard = By.id(APP_ID + ":id/cardAchievements");
+    private final By pointsCounter = LocatorUtil.idAnyPackage("tvPointsCount");
+    private final By findBinsCard = LocatorUtil.idAnyPackage("cardFindBins");
+    private final By newsTab = LocatorUtil.idAnyPackage("nav_news");
+    private final By eventsTab = LocatorUtil.idAnyPackage("nav_events");
+    private final By profileTab = LocatorUtil.idAnyPackage("nav_profile");
+    private final By recycleNowButton = LocatorUtil.idAnyPackage("btnRecycleNow");
+    private final By achievementsCard = LocatorUtil.idAnyPackage("cardAchievements");
 
     public HomePage(AndroidDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(25));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(16));
     }
 
     public void waitForHomePage() {
@@ -43,7 +41,7 @@ public class HomePage {
     public boolean isHomePageDisplayed() {
         try {
             driver.context("NATIVE_APP");
-            wait.until(ExpectedConditions.presenceOfElementLocated(pointsCounter));
+            waitForHomePage();
             return true;
         } catch (Exception e) {
             System.out.println("Home page not detected: " + e.getMessage());
@@ -103,45 +101,34 @@ public class HomePage {
     }
 
     public AchievementsPage goToAchievements() {
-        driver.findElement(AppiumBy.accessibilityId("Home")).click();
-        WebElement card = wait.until(ExpectedConditions.elementToBeClickable(achievementsCard));
-        card.click();
+        waitForHomePage();
+        wait.until(ExpectedConditions.elementToBeClickable(achievementsCard)).click();
         return new AchievementsPage(driver);
     }
 
     public NewsPage goToNews() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
-
-        driver.findElement(newsTab).click();
+        wait.until(ExpectedConditions.elementToBeClickable(newsTab)).click();
         return new NewsPage(driver);
     }
 
     public EventsPage goToEvents() {
-        try {
-            driver.hideKeyboard();
-        } catch (Exception ignored) {
-        }
-
-        driver.findElement(eventsTab).click();
+        wait.until(ExpectedConditions.elementToBeClickable(eventsTab)).click();
         return new EventsPage(driver);
     }
 
     public ProfilePage goToProfile() {
-        try {
-            driver.hideKeyboard();
-        } catch (Exception ignored) {
-        }
-
-        driver.findElement(profileTab).click();
+        wait.until(ExpectedConditions.elementToBeClickable(profileTab)).click();
         return new ProfilePage(driver);
     }
 
     public void clickRecycleNow() {
-        ScrollUtil.scrollDown(driver);
-        driver.findElement(recycleNowButton).click();
+        for (int i = 0; i < 4; i++) {
+            if (!driver.findElements(recycleNowButton).isEmpty()) {
+                wait.until(ExpectedConditions.elementToBeClickable(recycleNowButton)).click();
+                return;
+            }
+            ScrollUtil.scrollDown(driver);
+        }
+        throw new RuntimeException("Recycle Now button not found on Home screen.");
     }
 }
-
